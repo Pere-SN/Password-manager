@@ -22,9 +22,9 @@ def pass_generator():
     password_entry.delete(0, END)
     password_entry.insert(0, password)
     pyperclip.copy(password)
-# ---------------------------- SAVE PASSWORD ------------------------------- #
 
 
+# ---------------------------- SAVE DATA ------------------------------- #
 def save_data():
     website = website_entry.get()
     email = email_entry.get()
@@ -55,8 +55,25 @@ def save_data():
             with open("data.json", "w") as data_file:
                 json.dump(data, data_file, indent=4)
         finally:
+            messagebox.showinfo(title="Data stored", message="New entry added.")
             website_entry.delete(0, END)
             password_entry.delete(0, END)
+
+
+# ---------------------------- SEARCH FUNCTION ------------------------------- #
+def find_password():
+    website = website_entry.get()
+    try:
+        with open("data.json") as data_file:
+            website_data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No data file found.")
+    else:
+        if website in website_data:
+            messagebox.showinfo(title=website, message=f"Email:{website_data[ website ][ 'email' ]}\n"
+                                                       f"Password:{website_data[ website ][ 'password' ]}")
+        else:
+            messagebox.showinfo(title="Oops!", message="No details for the website exists.")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -83,8 +100,8 @@ password_label = Label(text="Password:", font=("Helvetica", 10, "bold"))
 password_label.grid(row=3, column=0, sticky="e")
 
 # Entry
-website_entry = Entry(width=36)
-website_entry.grid(row=1, column=1, columnspan=2, sticky="w")
+website_entry = Entry(width=20)
+website_entry.grid(row=1, column=1, sticky="w")
 website_entry.focus()
 
 email_entry = Entry(width=36)
@@ -100,6 +117,9 @@ generate_button.grid(row=3, column=1, columnspan=2, sticky="e")
 
 add_button = Button(text="Add", width=30, command=save_data)
 add_button.grid(row=4, column=1, columnspan=2, sticky="w")
+
+search_button = Button(text="Search", width=12, command=find_password)
+search_button.grid(row=1, column=1, columnspan=2, sticky="e")
 
 
 window.mainloop()
